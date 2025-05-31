@@ -36,67 +36,98 @@ const Gyroscope: React.FC<GyroscopeProps> = ({ spinRate, spinDirection, spinAxis
   });
 
   return (
-    <group position={[0, 2, 0]}>
+    <group position={[0, 1, 0]} castShadow receiveShadow>
       {/* Outer Gimbal Ring */}
-      <mesh ref={outerGimbalRef}>
-        <torusGeometry args={[2, 0.05, 8, 32]} />
-        <meshStandardMaterial color="#888888" metalness={0.8} roughness={0.2} />
+      <mesh ref={outerGimbalRef} castShadow>
+        <torusGeometry args={[2, 0.08, 12, 32]} />
+        <meshStandardMaterial color="#CD7F32" metalness={0.7} roughness={0.3} />
       </mesh>
 
       {/* Inner Gimbal Ring */}
-      <mesh ref={innerGimbalRef} rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[1.5, 0.05, 8, 32]} />
-        <meshStandardMaterial color="#666666" metalness={0.8} roughness={0.2} />
+      <mesh ref={innerGimbalRef} rotation={[Math.PI / 2, 0, 0]} castShadow>
+        <torusGeometry args={[1.5, 0.08, 12, 32]} />
+        <meshStandardMaterial color="#B8860B" metalness={0.7} roughness={0.3} />
       </mesh>
 
       {/* Central Spinning Wheel */}
-      <mesh ref={wheelRef}>
-        <cylinderGeometry args={[1, 1, 0.2, 32]} />
-        <meshStandardMaterial color="#444444" metalness={0.9} roughness={0.1} />
+      <mesh ref={wheelRef} castShadow>
+        <cylinderGeometry args={[1, 1, 0.3, 32]} />
+        <meshStandardMaterial color="#8B4513" metalness={0.6} roughness={0.4} />
       </mesh>
 
-      {/* Wheel Details */}
-      <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[0.8, 0.02, 8, 32]} />
-        <meshStandardMaterial color="#222222" metalness={0.9} roughness={0.1} />
+      {/* Wheel Details - concentric rings for classic look */}
+      <mesh rotation={[Math.PI / 2, 0, 0]} castShadow>
+        <torusGeometry args={[0.8, 0.03, 8, 32]} />
+        <meshStandardMaterial color="#654321" metalness={0.8} roughness={0.2} />
       </mesh>
-      <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[0.6, 0.02, 8, 32]} />
-        <meshStandardMaterial color="#222222" metalness={0.9} roughness={0.1} />
+      <mesh rotation={[Math.PI / 2, 0, 0]} castShadow>
+        <torusGeometry args={[0.6, 0.03, 8, 32]} />
+        <meshStandardMaterial color="#654321" metalness={0.8} roughness={0.2} />
+      </mesh>
+      <mesh rotation={[Math.PI / 2, 0, 0]} castShadow>
+        <torusGeometry args={[0.4, 0.03, 8, 32]} />
+        <meshStandardMaterial color="#654321" metalness={0.8} roughness={0.2} />
+      </mesh>
+
+      {/* Base support */}
+      <mesh position={[0, -1.2, 0]} castShadow>
+        <cylinderGeometry args={[0.3, 0.5, 0.4, 8]} />
+        <meshStandardMaterial color="#8B4513" metalness={0.6} roughness={0.4} />
       </mesh>
     </group>
   );
 };
 
 const Room: React.FC = () => {
+  // Create a texture for the tiled floor
+  const floorTexture = new THREE.TextureLoader().load('data:image/svg+xml;base64,' + btoa(`
+    <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+      <rect width="100" height="100" fill="#f8f8f8"/>
+      <rect width="50" height="50" fill="#ffffff"/>
+      <rect x="50" y="50" width="50" height="50" fill="#ffffff"/>
+      <rect width="100" height="1" fill="#e0e0e0"/>
+      <rect width="1" height="100" fill="#e0e0e0"/>
+      <rect x="50" width="1" height="100" fill="#e0e0e0"/>
+      <rect y="50" width="100" height="1" fill="#e0e0e0"/>
+    </svg>
+  `));
+  
+  floorTexture.wrapS = THREE.RepeatWrapping;
+  floorTexture.wrapT = THREE.RepeatWrapping;
+  floorTexture.repeat.set(20, 20);
+
   return (
     <group>
-      {/* Floor */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.5, 0]}>
+      {/* Floor with tiled texture */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
         <planeGeometry args={[20, 20]} />
-        <meshStandardMaterial color="#ffffff" roughness={0.1} metalness={0.1} />
+        <meshStandardMaterial 
+          map={floorTexture} 
+          roughness={0.1} 
+          metalness={0.05}
+        />
       </mesh>
       
       {/* Back Wall */}
-      <mesh position={[0, 5, -10]}>
+      <mesh position={[0, 5, -10]} receiveShadow>
         <planeGeometry args={[20, 12]} />
         <meshStandardMaterial color="#ffffff" roughness={0.1} metalness={0.1} />
       </mesh>
       
       {/* Left Wall */}
-      <mesh rotation={[0, Math.PI / 2, 0]} position={[-10, 5, 0]}>
+      <mesh rotation={[0, Math.PI / 2, 0]} position={[-10, 5, 0]} receiveShadow>
         <planeGeometry args={[20, 12]} />
         <meshStandardMaterial color="#ffffff" roughness={0.1} metalness={0.1} />
       </mesh>
       
       {/* Right Wall */}
-      <mesh rotation={[0, -Math.PI / 2, 0]} position={[10, 5, 0]}>
+      <mesh rotation={[0, -Math.PI / 2, 0]} position={[10, 5, 0]} receiveShadow>
         <planeGeometry args={[20, 12]} />
         <meshStandardMaterial color="#ffffff" roughness={0.1} metalness={0.1} />
       </mesh>
       
       {/* Ceiling */}
-      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 10, 0]}>
+      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 10, 0]} receiveShadow>
         <planeGeometry args={[20, 20]} />
         <meshStandardMaterial color="#ffffff" roughness={0.1} metalness={0.1} />
       </mesh>
@@ -216,16 +247,21 @@ const GyroscopeSimulation: React.FC = () => {
         shadows
         className="w-full h-full"
       >
-        {/* Lighting */}
-        <ambientLight intensity={0.4} />
+        {/* Lighting with shadows */}
+        <ambientLight intensity={0.3} />
         <directionalLight
           position={[10, 10, 5]}
-          intensity={0.8}
+          intensity={1.2}
           castShadow
           shadow-mapSize-width={2048}
           shadow-mapSize-height={2048}
+          shadow-camera-far={50}
+          shadow-camera-left={-10}
+          shadow-camera-right={10}
+          shadow-camera-top={10}
+          shadow-camera-bottom={-10}
         />
-        <pointLight position={[-5, 5, 5]} intensity={0.3} />
+        <pointLight position={[-5, 5, 5]} intensity={0.4} castShadow />
 
         {/* Environment */}
         <Room />
