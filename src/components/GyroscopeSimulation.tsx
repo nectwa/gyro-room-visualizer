@@ -22,9 +22,17 @@ const Gyroscope: React.FC<GyroscopeProps> = ({ spinRate, spinDirection, spinAxis
       // Calculate rotation speed in radians per frame
       const rotationSpeed = (spinRate * spinDirection * delta * Math.PI) / 30; // Convert RPM to rad/frame
       
-      // Apply rotation to the spinning wheel
-      const axis = new THREE.Vector3(...spinAxis).normalize();
-      wheelRef.current.rotateOnAxis(axis, rotationSpeed);
+      // Apply rotation to the spinning wheel based on the selected axis
+      if (spinAxis[0] === 1) {
+        // X-axis rotation
+        wheelRef.current.rotation.x += rotationSpeed;
+      } else if (spinAxis[1] === 1) {
+        // Y-axis rotation
+        wheelRef.current.rotation.y += rotationSpeed;
+      } else if (spinAxis[2] === 1) {
+        // Z-axis rotation
+        wheelRef.current.rotation.z += rotationSpeed;
+      }
     }
 
     // Gimbal physics simulation
@@ -36,7 +44,7 @@ const Gyroscope: React.FC<GyroscopeProps> = ({ spinRate, spinDirection, spinAxis
   });
 
   return (
-    <group position={[0, 1, 0]} castShadow receiveShadow>
+    <group position={[0, 1.4, 0]} castShadow receiveShadow>
       {/* Outer Gimbal Ring */}
       <mesh ref={outerGimbalRef} castShadow>
         <torusGeometry args={[2, 0.08, 12, 32]} />
