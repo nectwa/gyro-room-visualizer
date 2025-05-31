@@ -1,3 +1,4 @@
+
 import React, { useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Environment } from '@react-three/drei';
@@ -44,7 +45,7 @@ const Gyroscope: React.FC<GyroscopeProps> = ({ spinRate, spinDirection, spinAxis
   });
 
   return (
-    <group position={[0, 1.4, 0]} castShadow receiveShadow>
+    <group position={[0, 2.2, 0]} castShadow receiveShadow>
       {/* Outer Gimbal Ring */}
       <mesh ref={outerGimbalRef} castShadow>
         <torusGeometry args={[2, 0.08, 12, 32]} />
@@ -87,57 +88,68 @@ const Gyroscope: React.FC<GyroscopeProps> = ({ spinRate, spinDirection, spinAxis
 };
 
 const Room: React.FC = () => {
-  // Create a texture for the tiled floor
+  // Create a more realistic concrete/stone floor texture
   const floorTexture = new THREE.TextureLoader().load('data:image/svg+xml;base64,' + btoa(`
-    <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
-      <rect width="100" height="100" fill="#f8f8f8"/>
-      <rect width="50" height="50" fill="#ffffff"/>
-      <rect x="50" y="50" width="50" height="50" fill="#ffffff"/>
-      <rect width="100" height="1" fill="#e0e0e0"/>
-      <rect width="1" height="100" fill="#e0e0e0"/>
-      <rect x="50" width="1" height="100" fill="#e0e0e0"/>
-      <rect y="50" width="100" height="1" fill="#e0e0e0"/>
+    <svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="concrete" x="0" y="0" width="50" height="50" patternUnits="userSpaceOnUse">
+          <rect width="50" height="50" fill="#e8e6e1"/>
+          <rect x="1" y="1" width="48" height="48" fill="#f2f0eb" stroke="#d4d2cd" stroke-width="0.5"/>
+          <circle cx="25" cy="25" r="2" fill="#c9c7c2" opacity="0.3"/>
+          <circle cx="12" cy="38" r="1.5" fill="#bfbdb8" opacity="0.4"/>
+          <circle cx="38" cy="12" r="1.2" fill="#d1cfc9" opacity="0.3"/>
+        </pattern>
+      </defs>
+      <rect width="200" height="200" fill="url(#concrete)"/>
+      <rect x="50" y="0" width="1" height="200" fill="#d4d2cd" opacity="0.8"/>
+      <rect x="100" y="0" width="1" height="200" fill="#d4d2cd" opacity="0.8"/>
+      <rect x="150" y="0" width="1" height="200" fill="#d4d2cd" opacity="0.8"/>
+      <rect x="0" y="50" width="200" height="1" fill="#d4d2cd" opacity="0.8"/>
+      <rect x="0" y="100" width="200" height="1" fill="#d4d2cd" opacity="0.8"/>
+      <rect x="0" y="150" width="200" height="1" fill="#d4d2cd" opacity="0.8"/>
     </svg>
   `));
   
   floorTexture.wrapS = THREE.RepeatWrapping;
   floorTexture.wrapT = THREE.RepeatWrapping;
-  floorTexture.repeat.set(20, 20);
+  floorTexture.repeat.set(15, 15);
 
   return (
     <group>
-      {/* Floor with tiled texture */}
+      {/* Floor with realistic concrete texture */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
         <planeGeometry args={[20, 20]} />
         <meshStandardMaterial 
           map={floorTexture} 
-          roughness={0.1} 
-          metalness={0.05}
+          roughness={0.8} 
+          metalness={0.02}
+          transparent={false}
+          opacity={1}
         />
       </mesh>
       
       {/* Back Wall */}
       <mesh position={[0, 5, -10]} receiveShadow>
         <planeGeometry args={[20, 12]} />
-        <meshStandardMaterial color="#ffffff" roughness={0.1} metalness={0.1} />
+        <meshStandardMaterial color="#f8f8f8" roughness={0.9} metalness={0.0} transparent={false} opacity={1} />
       </mesh>
       
       {/* Left Wall */}
       <mesh rotation={[0, Math.PI / 2, 0]} position={[-10, 5, 0]} receiveShadow>
         <planeGeometry args={[20, 12]} />
-        <meshStandardMaterial color="#ffffff" roughness={0.1} metalness={0.1} />
+        <meshStandardMaterial color="#f8f8f8" roughness={0.9} metalness={0.0} transparent={false} opacity={1} />
       </mesh>
       
       {/* Right Wall */}
       <mesh rotation={[0, -Math.PI / 2, 0]} position={[10, 5, 0]} receiveShadow>
         <planeGeometry args={[20, 12]} />
-        <meshStandardMaterial color="#ffffff" roughness={0.1} metalness={0.1} />
+        <meshStandardMaterial color="#f8f8f8" roughness={0.9} metalness={0.0} transparent={false} opacity={1} />
       </mesh>
       
       {/* Ceiling */}
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 10, 0]} receiveShadow>
         <planeGeometry args={[20, 20]} />
-        <meshStandardMaterial color="#ffffff" roughness={0.1} metalness={0.1} />
+        <meshStandardMaterial color="#f8f8f8" roughness={0.9} metalness={0.0} transparent={false} opacity={1} />
       </mesh>
     </group>
   );
@@ -255,21 +267,30 @@ const GyroscopeSimulation: React.FC = () => {
         shadows
         className="w-full h-full"
       >
-        {/* Lighting with shadows */}
-        <ambientLight intensity={0.3} />
+        {/* Improved lighting setup to prevent bleeding */}
+        <ambientLight intensity={0.4} />
         <directionalLight
-          position={[10, 10, 5]}
-          intensity={1.2}
+          position={[8, 8, 3]}
+          intensity={1.0}
           castShadow
           shadow-mapSize-width={2048}
           shadow-mapSize-height={2048}
-          shadow-camera-far={50}
+          shadow-camera-far={25}
           shadow-camera-left={-10}
           shadow-camera-right={10}
           shadow-camera-top={10}
           shadow-camera-bottom={-10}
+          shadow-bias={-0.0001}
         />
-        <pointLight position={[-5, 5, 5]} intensity={0.4} castShadow />
+        <spotLight 
+          position={[5, 8, 5]} 
+          intensity={0.3} 
+          castShadow 
+          angle={Math.PI / 6}
+          penumbra={0.3}
+          decay={2}
+          distance={20}
+        />
 
         {/* Environment */}
         <Room />
