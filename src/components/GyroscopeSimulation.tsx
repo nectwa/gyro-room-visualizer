@@ -1,4 +1,3 @@
-
 import React, { useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Environment } from '@react-three/drei';
@@ -37,7 +36,7 @@ const Gyroscope: React.FC<GyroscopeProps> = ({ spinRate, spinDirection, spinAxis
   });
 
   return (
-    <group position={[0, 0.5, 0]}>
+    <group position={[0, 2, 0]}>
       {/* Outer Gimbal Ring */}
       <mesh ref={outerGimbalRef}>
         <torusGeometry args={[2, 0.05, 8, 32]} />
