@@ -2,8 +2,7 @@
 
 **URL**: https://lovable.dev/projects/8387900d-e74b-4a63-982a-e19437a4b7a6
 
-Got pretty close to what I envisioned
-Not bad for a sub 20 minute work eh?
+Got pretty close to what I envisioned. Not bad for a sub 20 minute work eh?
 
 This project is built with:
 
